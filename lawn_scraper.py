@@ -3,12 +3,16 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.firefox.options import Options
+
 
 import os
 
 def get_lawn_status():
     # Start driver
-    driver = webdriver.Firefox(executable_path = os.getcwd() + '/geckodriver')
+    options = Options()
+    options.headless = True
+    driver = webdriver.Firefox(executable_path = os.getcwd() + '/geckodriver',options=options)
 
     # Load Page
     driver.get("http://www.bryantpark.org")

@@ -1,5 +1,6 @@
 from lawn_scraper import get_lawn_status
 import boto3
+from time import sleep
 
 def populate_status_strings():
     lawn_status_strings = ('','')
@@ -9,11 +10,29 @@ def populate_status_strings():
 
 def write_html():
     lawn_status_strings = populate_status_strings()
-
+    open_photo_url = 'https://hesterstreetfair.com/wp-content/uploads/2018/06/bryant-park-lawn.jpg'
+    closed_photo_url = 'https://2.bp.blogspot.com/-fQ7baSzx6Y8/VzjvktLC1lI/AAAAAAACmps/b7y0Vv2vn_EHkA-LypxT42brxReH8-lbACKgB/s1600/DSCF8783.jpg'
+    photo_url = open_photo_url if 'open' in lawn_status_strings[0] else closed_photo_url
     html_str = f"""
-    <h1>
+    <!doctype html>
+    <html lang="en">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <br>
+    <h1 align="center"><font size='36'>
         {'YUP' if 'open' in lawn_status_strings[0] else 'NOPE'}
     </h1>
+    
+    <br>
+    
+    <p>
+        {lawn_status_strings[1]}
+    </p>
+    
+    <div align='center'>
+       <img src={photo_url}>
+    </div>
+    
+    </html>
     """
 
     html_file= open("index.html","w")
@@ -40,5 +59,7 @@ def upload_file(file_name, bucket, object_name=None):
     response = s3_client.upload_file(file_name, bucket, object_name, ExtraArgs={'ContentType': 'text/html'})
     return True
 
-write_html()
-upload_file(file_name='index.html', bucket='ibplo')
+while True:
+    write_html()
+    upload_file(file_name='index.html', bucket='isthebryantparklawnopen.com')
+    sleep(60)
