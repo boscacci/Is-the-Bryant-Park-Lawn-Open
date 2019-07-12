@@ -17,14 +17,11 @@ def write_html():
     <!doctype html>
     <html lang="en">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
-    <br>
     <h1 align="center"><font size='36'>
         {'YUP' if 'open' in lawn_status_strings[0] else 'NOPE'}
-    </h1>
+    </font></h1>
     
-    <br>
-    
-    <p>
+    <p align='center'>
         {lawn_status_strings[1]}
     </p>
     
@@ -62,4 +59,4 @@ def upload_file(file_name, bucket, object_name=None):
 while True:
     write_html()
     upload_file(file_name='index.html', bucket='isthebryantparklawnopen.com')
-    sleep(60)
+    sleep(60 * 5)
