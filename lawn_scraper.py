@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException, WebDriverException
 from selenium.webdriver.firefox.options import Options
 
 import os
@@ -11,7 +11,10 @@ def get_lawn_status():
     # Start driver
     options = Options()
     options.headless = True
-    driver = webdriver.Firefox(executable_path = os.getcwd() + '/geckodriver',options=options)
+    try:
+        driver = webdriver.Firefox(executable_path = os.getcwd() + '/geckodriver',options=options)
+    except WebDriverException:
+        return ('','')
 
     # Load Page
     driver.get("http://www.bryantpark.org")

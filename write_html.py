@@ -22,7 +22,7 @@ def write_html():
     </font></h1>
     
     <p align='center'>
-        {lawn_status_strings[1]}
+        {lawn_status_strings[1] if 'closed' in lawn_status_strings[0] else ''}
     </p>
     
     <div align='center'>
@@ -59,4 +59,4 @@ def upload_file(file_name, bucket, object_name=None):
 while True:
     write_html()
     upload_file(file_name='index.html', bucket='isthebryantparklawnopen.com')
-    sleep(60 * 5)
+    sleep(60 * 10)
