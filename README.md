@@ -2,4 +2,6 @@
 
 www.isthebryantparklawnopen.com
 
-Why not have an ec2 instance scrape the bloated bryantpark.org website every minute and update a static site in an s3 bucket?
+Tells you whether or not the Bryant Park Lawn is open. You know, in case you were considering taking your lunch there, or something.
+
+AWS Lambda jobs for scraping the bryantpark.org website for lawn (open/closed) status and caching that binary result to an s3 bucket site.
