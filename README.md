@@ -5,7 +5,7 @@ www.isthebryantparklawnopen.com
 Tells you whether or not the Bryant Park Lawn is open.
 
 <img src="lawn.png">
-<br><br>
+<br>
 
 I made this because I used to work around the corner from Bryant Park. Sometimes I would want to know (before I left for lunch) whether or not the lawn was open: If it was open, I would go eat lunch in the grass. If it was closed, I would just come straight back to the office to eat. The bryantpark.org domain took too long to load (with lots of extra images and info), so I set out to create a simpler webpage for my singular purpose.
 
