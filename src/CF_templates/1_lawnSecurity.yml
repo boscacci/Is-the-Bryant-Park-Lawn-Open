@@ -1,0 +1,35 @@
+Description: >
+  Security group configs; what can access what in the VPC?
+
+Resources:  
+  lawnVpcSgPrivate: # Private SG for RDS and lambda DB r/w access
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Lawn Private VPC SG
+      VpcId: 
+        Fn::ImportValue: lawnVPC
+      GroupName: lawn-Vpc-SG-Private
+      Tags:
+        - Key: Name
+          Value: lawn-Vpc-SG-Private
+    
+  lawnVpcSgPrivateIngress: # Let this SG talk to itself
+   Type: 'AWS::EC2::SecurityGroupIngress'
+   Properties:
+      GroupId: !Ref lawnVpcSgPrivate
+      IpProtocol: -1
+      SourceSecurityGroupId: !GetAtt lawnVpcSgPrivate.GroupId
+
+  lawnVpcSgPrivateEgress: # Let this SG talk to itself
+   Type: 'AWS::EC2::SecurityGroupEgress'
+   Properties:
+      GroupId: !Ref lawnVpcSgPrivate
+      IpProtocol: -1
+      DestinationSecurityGroupId: !GetAtt lawnVpcSgPrivate.GroupId
+  
+Outputs:
+  lawnVpcSgPrivate:
+    Description: A reference to the private SG for RDS/Lambda rw
+    Value: !Ref lawnVpcSgPrivate
+    Export:
+      Name: lawnVpcSgPrivate

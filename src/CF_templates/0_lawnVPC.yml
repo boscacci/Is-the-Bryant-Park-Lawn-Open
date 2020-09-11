@@ -1,0 +1,73 @@
+Description: >
+  The network infrastructure under the BPL scraper app
+
+Resources:
+  lawnVPC: # The whole big sandbox. Networks all infra for this app
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      Tags:
+      - Key: Name
+        Value: !Join ['', [!Ref "AWS::StackName", "-VPC" ]]
+
+  lawnSubnetPublicA: # 1 of 2 public subnets
+    Type: AWS::EC2::Subnet
+    Properties: 
+      AvailabilityZone: us-east-1b
+      CidrBlock: 10.0.0.0/24
+      VpcId: !Ref lawnVPC
+      Tags:
+        - Key: Name
+          Value: lawn-Subnet-Public-A
+
+  lawnSubnetPublicB: # 2 of 2 public subnets
+    Type: AWS::EC2::Subnet
+    Properties: 
+      AvailabilityZone: us-east-1c
+      CidrBlock: 10.0.1.0/24
+      VpcId: !Ref lawnVPC
+      Tags:
+        - Key: Name
+          Value: lawn-Subnet-Public-B
+
+  lawnSubnetPrivateA: # 1 of 2 private subnets
+    Type: AWS::EC2::Subnet
+    Properties: 
+      AvailabilityZone: us-east-1d
+      CidrBlock: 10.0.2.0/24
+      VpcId: !Ref lawnVPC
+      Tags:
+        - Key: Name
+          Value: lawn-Subnet-Private-A
+
+  lawnSubnetPrivateB: # 2 of 2 private subnets
+    Type: AWS::EC2::Subnet
+    Properties: 
+      AvailabilityZone: us-east-1f
+      CidrBlock: 10.0.3.0/24
+      VpcId: !Ref lawnVPC
+      Tags:
+        - Key: Name
+          Value: lawn-Subnet-Private-B
+
+  lawnDBsubnetGroup: # RDS DB needs a subnet group. This is it
+    Type: AWS::RDS::DBSubnetGroup
+    Properties: 
+      DBSubnetGroupDescription: The two private subnets
+      DBSubnetGroupName: lawn-DB-subnet-Group
+      SubnetIds: 
+        - !Ref lawnSubnetPrivateA
+        - !Ref lawnSubnetPrivateB
+
+Outputs:
+  lawnVPC:
+    Description: A reference to the main app VPC
+    Value: !Ref lawnVPC
+    Export:
+      Name: lawnVPC
+
+  lawnDBsubnetGroup:
+    Description: A reference to the private DB subnet group
+    Value: !Ref lawnDBsubnetGroup
+    Export:
+      Name: lawnDBsubnetGroup
