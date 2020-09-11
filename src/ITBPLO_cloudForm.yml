@@ -1,0 +1,84 @@
+Description: >
+  This is the infrastructure behind isTheBryantParkLawnOpen.com!
+
+Resources:
+  lawnVPC: # The whole environment
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+
+  lawnSubnetPublicA: # 1 of 2 public subnets
+    Type: AWS::EC2::Subnet
+    Properties: 
+      AvailabilityZone: us-east-1b
+      CidrBlock: 10.0.0.0/24
+      VpcId: !Ref lawnVPC
+
+  lawnSubnetPublicB: # 2 of 2 public subnets
+    Type: AWS::EC2::Subnet
+    Properties: 
+      AvailabilityZone: us-east-1c
+      CidrBlock: 10.0.1.0/24
+      VpcId: !Ref lawnVPC
+
+  lawnSubnetPrivateA: # 1 of 2 private subnets
+    Type: AWS::EC2::Subnet
+    Properties: 
+      AvailabilityZone: us-east-1d
+      CidrBlock: 10.0.2.0/24
+      VpcId: !Ref lawnVPC
+
+  lawnSubnetPrivateB: # 2 of 2 private subnets
+    Type: AWS::EC2::Subnet
+    Properties: 
+      AvailabilityZone: us-east-1f
+      CidrBlock: 10.0.3.0/24
+      VpcId: !Ref lawnVPC
+
+  lawnDBsubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties: 
+      DBSubnetGroupDescription: The two private subnets
+      DBSubnetGroupName: lawnDBsubnetGroup
+      SubnetIds: 
+        - !Ref lawnSubnetPrivateA
+        - !Ref lawnSubnetPrivateB
+
+  lawnVpcSgPrivate:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Lawn Private VPC SG
+      VpcId: !Ref lawnVPC
+      GroupName: lawnVpcSgPrivate
+    
+  lawnVpcSgPrivateIngress:
+   Type: 'AWS::EC2::SecurityGroupIngress'
+   Properties:
+      GroupId: !Ref lawnVpcSgPrivate
+      IpProtocol: -1
+      SourceSecurityGroupId: !GetAtt lawnVpcSgPrivate.GroupId
+
+  lawnVpcSgPrivateEgress:
+   Type: 'AWS::EC2::SecurityGroupEgress'
+   Properties:
+      GroupId: !Ref lawnVpcSgPrivate
+      IpProtocol: -1
+      DestinationSecurityGroupId: !GetAtt lawnVpcSgPrivate.GroupId
+
+  lawnDB: # Our hero DB. Use sidecar stack policy to prevent overwrite
+    Type: AWS::RDS::DBInstance
+    Properties: 
+      AllocatedStorage: 100
+      AllowMajorVersionUpgrade: False
+      AutoMinorVersionUpgrade: False
+      AvailabilityZone: us-east-1d
+      DBInstanceClass: db.t2.micro
+      DBInstanceIdentifier: lawnDB
+      DBSubnetGroupName: !Ref lawnDBsubnetGroup
+      MasterUsername: lawn_admin
+      MasterUserPassword: lawn_password
+      PubliclyAccessible: False
+      Port: 5432
+      Engine: postgres
+      VPCSecurityGroups: 
+        - !Ref lawnVpcSgPrivate
