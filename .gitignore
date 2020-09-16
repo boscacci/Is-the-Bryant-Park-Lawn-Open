@@ -3,3 +3,5 @@ __pycache__
 geckodriver.log
 */secrets.py
 .vscode
+python-dependencies
+selenium-binaries

@@ -1,0 +1,31 @@
+Description: >
+  Creates execution roles and iam policies for Lambda functions
+
+Resources:
+  LambdaScraperExecRole: # Allows web access, event triggers, call lambdas
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: lambda.amazonaws.com
+          Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+      # Write cloudwatch logs:
+      - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+      # Make web connections:
+      - 'arn:aws:iam::aws:policy/service-role/AWSLambdaENIManagementAccess'
+      # Call other lambdas:
+      - 'arn:aws:iam::aws:policy/service-role/AWSLambdaRole'
+    Tags:
+    - Key: Name
+      Value: LambdaScraperExecRole
+           
+Outputs:
+  LambdaScraperExecRole:
+    Description: An execution role for the web scraper lambda
+    Value: !Ref LambdaScraperExecRole
+    Export:
+      Name: LambdaScraperExecRole

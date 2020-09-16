@@ -1,0 +1,27 @@
+Description: >
+  Provisions the lambda functions involved for ITBPLO
+
+Resources:
+  LambdaLawnScraper:
+    Type: AWS::Lambda::Function
+    Properties: 
+      Code: 
+        # S3Bucket: String
+        # S3Key: String
+        # S3ObjectVersion: String
+      Description: Scrapes Bryant Park Org for lawn status
+      Handler: index.lambda_handler
+      MemorySize: 1280
+      Role: Fn::ImportValue: LambdaScraperExecRole
+      Runtime: python3.8
+      Timeout: 7
+      Tags:
+      - Key: Name
+        Value: LambdaLawnScraper
+           
+Outputs:
+  # LambdaScraperExecRole:
+  #   Description: An execution role for the web scraper lambda
+  #   Value: !Ref LambdaScraperExecRole
+  #   Export:
+  #     Name: LambdaScraperExecRole
