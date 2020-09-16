@@ -48,9 +48,11 @@ def lambda_handler(event, context):
         driver.close()
         driver.quit()
 
-    status_and_temp = {"lawn_status": status_text, "current_temp": temp_F}
+    temp_F_clean = temp_F.split("\u00b0")[0]
+
+    status_and_temp = {"lawn_status": status_text, "temp_F": temp_F_clean}
 
     return {
         "statusCode": 200,
-        "body": json.dumps(status_and_temp),
+        "body": status_and_temp,
     }

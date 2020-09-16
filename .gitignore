@@ -5,3 +5,4 @@ geckodriver.log
 .vscode
 python-dependencies
 selenium-binaries
+src/lambda_funcs/0_lawn_scraper/.python-version

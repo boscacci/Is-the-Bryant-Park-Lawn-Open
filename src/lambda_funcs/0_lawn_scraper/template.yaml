@@ -55,8 +55,8 @@ Resources:
       CodeUri: LambdalawnScraper/
       Handler: app.lambda_handler
       Runtime: python3.6
-      MemorySize: 128
-      Timeout: 300
+      MemorySize: 1280
+      Timeout: 7
       Layers:
         - !Ref ChromiumLayer
         - !Ref PythonDepLayer
@@ -69,6 +69,3 @@ Outputs:
   LambdalawnScraperFunction:
     Description: "LambdalawnScraper Lambda Function ARN"
     Value: !GetAtt LambdalawnScraperFunction.Arn
-  # LambdalawnScraperFunctionIamRole:
-  #   Description: "Implicit IAM Role created for LambdalawnScraper function"
-  #   Value: !GetAtt LambdalawnScraperFunctionRole.Arn
