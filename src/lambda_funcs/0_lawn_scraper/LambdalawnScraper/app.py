@@ -50,7 +50,7 @@ def lambda_handler(event, context):
 
     temp_F_clean = temp_F.split("\u00b0")[0]
 
-    status_and_temp = {"lawn_status": status_text, "temp_F": temp_F_clean}
+    status_and_temp = {"raw_lawn_status": status_text, "temp_F": temp_F_clean}
 
     return {
         "statusCode": 200,

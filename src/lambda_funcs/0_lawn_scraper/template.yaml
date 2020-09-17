@@ -49,10 +49,12 @@ Resources:
       LicenseInfo: 'MIT'
       RetentionPolicy: Retain
 
-  LambdalawnScraperFunction:
+  LambdaLawnScraperFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: LambdalawnScraper/
+      FunctionName:
+        LambdaLawnScraperFunction
       Handler: app.lambda_handler
       Runtime: python3.6
       MemorySize: 1280
@@ -66,6 +68,6 @@ Resources:
           PATH: /var/lang/bin:/usr/local/bin:/usr/bin/:/bin:/opt/bin:/tmp/bin:/tmp/bin/lib
 
 Outputs:
-  LambdalawnScraperFunction:
-    Description: "LambdalawnScraper Lambda Function ARN"
-    Value: !GetAtt LambdalawnScraperFunction.Arn
+  LambdaLawnScraperFunction:
+    Description: "Lawn Scraper Lambda Function ARN"
+    Value: !GetAtt LambdaLawnScraperFunction.Arn

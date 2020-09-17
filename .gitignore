@@ -6,3 +6,4 @@ geckodriver.log
 python-dependencies
 selenium-binaries
 .python-version
+build

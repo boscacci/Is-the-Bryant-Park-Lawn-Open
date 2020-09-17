@@ -7,12 +7,12 @@ Resources:
     Properties:
       CidrBlock: 10.0.0.0/16
       Tags:
-      - Key: Name
-        Value: !Join ['', [!Ref "AWS::StackName", "-VPC" ]]
+        - Key: Name
+          Value: !Join ["", [!Ref "AWS::StackName", "-VPC"]]
 
   lawnSubnetPublicA: # 1 of 2 public subnets
     Type: AWS::EC2::Subnet
-    Properties: 
+    Properties:
       AvailabilityZone: us-east-1b
       CidrBlock: 10.0.0.0/24
       VpcId: !Ref lawnVPC
@@ -22,7 +22,7 @@ Resources:
 
   lawnSubnetPublicB: # 2 of 2 public subnets
     Type: AWS::EC2::Subnet
-    Properties: 
+    Properties:
       AvailabilityZone: us-east-1c
       CidrBlock: 10.0.1.0/24
       VpcId: !Ref lawnVPC
@@ -32,7 +32,7 @@ Resources:
 
   lawnSubnetPrivateA: # 1 of 2 private subnets
     Type: AWS::EC2::Subnet
-    Properties: 
+    Properties:
       AvailabilityZone: us-east-1d
       CidrBlock: 10.0.2.0/24
       VpcId: !Ref lawnVPC
@@ -42,7 +42,7 @@ Resources:
 
   lawnSubnetPrivateB: # 2 of 2 private subnets
     Type: AWS::EC2::Subnet
-    Properties: 
+    Properties:
       AvailabilityZone: us-east-1f
       CidrBlock: 10.0.3.0/24
       VpcId: !Ref lawnVPC
@@ -52,10 +52,10 @@ Resources:
 
   lawnDBsubnetGroup: # RDS DB needs a subnet group. This is it
     Type: AWS::RDS::DBSubnetGroup
-    Properties: 
+    Properties:
       DBSubnetGroupDescription: The two private subnets
       DBSubnetGroupName: lawn-DB-subnet-Group
-      SubnetIds: 
+      SubnetIds:
         - !Ref lawnSubnetPrivateA
         - !Ref lawnSubnetPrivateB
 
@@ -71,3 +71,15 @@ Outputs:
     Value: !Ref lawnDBsubnetGroup
     Export:
       Name: lawnDBsubnetGroup
+
+  lawnSubnetPrivateA:
+    Description: 1 of 2 private subnets
+    Value: !Ref lawnSubnetPrivateA
+    Export:
+      Name: lawnSubnetPrivateA
+
+  lawnSubnetPrivateB:
+    Description: 2 of 2 private subnets
+    Value: !Ref lawnSubnetPrivateB
+    Export:
+      Name: lawnSubnetPrivateB

@@ -10,16 +10,17 @@ Globals:
     Timeout: 10
 
 Resources:
-  LawnStatusParserLambda:
+  LambdaLawnParserFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: LawnParser/
+      FunctionName: LambdaLawnParserFunction
       Handler: app.lambda_handler
       Runtime: python3.6
       MemorySize: 640
-      Timeout: 10
+      Timeout: 5
 
 Outputs:
-  LawnStatusParserLambda:
+  LambdaLawnParserFunction:
     Description: "ARN of lawn status parser lambda"
-    Value: !GetAtt LawnStatusParserLambda.Arn
+    Value: !GetAtt LambdaLawnParserFunction.Arn

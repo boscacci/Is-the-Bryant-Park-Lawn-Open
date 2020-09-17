@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  2_rds_writer
+  SAM Template for 2_rds_writer
+
+Globals:
+  Function:
+    Timeout: 10
+
+Resources:
+  lawnRDSwriter:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: lawn_rds_writer/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      MemorySize: 128
+      Timeout: 10
+      Policies:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaRole
+        - arn:aws:iam::aws:policy/AmazonRDSFullAccess
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::ImportValue: lawnVpcSgPrivate
+        SubnetIds:
+          - Fn::ImportValue: lawnSubnetPrivateA
+          - Fn::ImportValue: lawnSubnetPrivateB
+      # Events:
+      #   cronTrigger:
+      #     Type: CloudWatchEvent
+      #     Properties:
+
+Outputs:
+  lawnRDSwriter:
+    Description: "Function that writes lawn status to rds rows"
+    Value: !GetAtt lawnRDSwriter.Arn
