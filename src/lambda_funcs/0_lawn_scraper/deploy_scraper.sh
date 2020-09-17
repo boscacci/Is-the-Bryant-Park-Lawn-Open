@@ -3,6 +3,6 @@ aws s3api create-bucket \
 --region us-east-1
 
 sam deploy \
---stack-name lawnFuncs \
+--stack-name lawnScraper \
 --s3-bucket lawn-scraper-src \
 --capabilities CAPABILITY_IAM
