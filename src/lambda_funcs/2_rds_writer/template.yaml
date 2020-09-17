@@ -6,26 +6,23 @@ Description: >
 
 Globals:
   Function:
-    Timeout: 10
+    Timeout: 12
 
 Resources:
   lawnRDSwriter:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: lawn_rds_writer/
+      Environment:
+        Variables:
+          DB_HOST:
+            Fn::ImportValue: lawnDB
       Handler: app.lambda_handler
       Runtime: python3.8
-      MemorySize: 128
-      Timeout: 10
+      MemorySize: 256
+      Timeout: 12
       Policies:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaRole
-        - arn:aws:iam::aws:policy/AmazonRDSFullAccess
-      VpcConfig:
-        SecurityGroupIds:
-          - Fn::ImportValue: lawnVpcSgPrivate
-        SubnetIds:
-          - Fn::ImportValue: lawnSubnetPrivateA
-          - Fn::ImportValue: lawnSubnetPrivateB
       # Events:
       #   cronTrigger:
       #     Type: CloudWatchEvent

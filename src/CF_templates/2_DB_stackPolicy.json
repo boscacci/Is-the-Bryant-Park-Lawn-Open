@@ -4,12 +4,6 @@
             "Effect": "Deny",
             "Action": "Update:*",
             "Principal": "*",
-            "Resource": "lawnDB"
-        },
-        {
-            "Effect": "Allow",
-            "Action": "Update:*",
-            "Principal": "*",
             "Resource": "*"
         }
     ]

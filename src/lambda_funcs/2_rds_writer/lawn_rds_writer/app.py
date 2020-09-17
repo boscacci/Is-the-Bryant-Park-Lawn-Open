@@ -1,9 +1,24 @@
-import json
+import sys, os, json
+
 import pandas as pd
 import psycopg2
 import boto3
 
 client = boto3.client("lambda")
+hostname = os.getenv("DB_HOST")
+
+try:
+    conn = psycopg2.connect(
+        dbname="lawndb",
+        user="lawn_admin",  # Not a secret
+        password="lawn_password",  # Not a secret
+        host=hostname,
+        port=6543,
+    )
+
+except:
+    print("ERROR: Couldn't connect to RDS instance.")
+    sys.exit()
 
 
 def lambda_handler(event, context):
@@ -17,10 +32,15 @@ def lambda_handler(event, context):
 
 
 def scrape_and_parse():
+
+    print("starting to scrape...")
+
     scraper_response = client.invoke(
         FunctionName="LambdaLawnScraperFunction",
         InvocationType="RequestResponse",
     )
+
+    print("Successful scrape.")
 
     scraped_data = dict(
         json.loads(scraper_response["Payload"].read().decode("utf-8"))["body"]
@@ -31,6 +51,8 @@ def scrape_and_parse():
         InvocationType="RequestResponse",
         Payload=bytes(json.dumps(scraped_data), encoding="utf8"),
     )
+
+    print("Successful parse.")
 
     parsed_data = dict(
         json.loads(parser_response["Payload"].read().decode("utf-8"))["body"]

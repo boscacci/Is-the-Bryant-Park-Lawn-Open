@@ -4,28 +4,28 @@ Description: >
 Resources:
   lawnDB: # Central DB. Use sidecar stack policy to avoid overwrites
     Type: AWS::RDS::DBInstance
-    Properties: 
+    Properties:
       AllocatedStorage: 100
       AllowMajorVersionUpgrade: False
       AutoMinorVersionUpgrade: False
-      AvailabilityZone: us-east-1d
+      AvailabilityZone: us-east-1b
       DBInstanceClass: db.t2.micro
+      DBName: lawndb
       StorageType: gp2 # aka SSD general purpose
       DBInstanceIdentifier: lawnDB
-      DBSubnetGroupName: 
+      DBSubnetGroupName:
         Fn::ImportValue: lawnDBsubnetGroup
-      MasterUsername: lawn_admin # Not public-facing, not worried
-      MasterUserPassword: lawn_password # Not a secret
-      PubliclyAccessible: False
-      Port: 5432 # Default postgresql port
+      MasterUsername: lawn_admin # Ultimately safeguarded by SG
+      MasterUserPassword: lawn_password # Ultimately safeguarded by SG
+      PubliclyAccessible: True
+      Port: 6543 # Slightly non-default postgreSQL port
       Engine: postgres
       VPCSecurityGroups:
-        - Fn::ImportValue: 
-            lawnVpcSgPrivate # Doesn't touch the internet
-           
+        - Fn::ImportValue: lawnDBgroup # Doesn't touch the web
+
 Outputs:
   lawnDB:
-    Description: A reference to the main app RDS DB
-    Value: !Ref lawnDB
+    Description: A reference to the RDS DB hostname
+    Value: !GetAtt lawnDB.Endpoint.Address
     Export:
       Name: lawnDB

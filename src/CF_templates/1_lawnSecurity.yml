@@ -1,35 +1,84 @@
 Description: >
   Security group configs; what can access what in the VPC?
 
-Resources:  
-  lawnVpcSgPrivate: # Private SG for RDS and lambda DB r/w access
+Resources:
+  lawnDBgroup: # Security group for RDS
     Type: AWS::EC2::SecurityGroup
-    Properties: 
-      GroupDescription: Lawn Private VPC SG
-      VpcId: 
+    Properties:
+      GroupDescription: Lawn DB SG
+      VpcId:
         Fn::ImportValue: lawnVPC
-      GroupName: lawn-Vpc-SG-Private
+      GroupName: lawn-DB-SG
       Tags:
         - Key: Name
-          Value: lawn-Vpc-SG-Private
-    
-  lawnVpcSgPrivateIngress: # Let this SG talk to itself
-   Type: 'AWS::EC2::SecurityGroupIngress'
-   Properties:
-      GroupId: !Ref lawnVpcSgPrivate
-      IpProtocol: -1
-      SourceSecurityGroupId: !GetAtt lawnVpcSgPrivate.GroupId
+          Value: lawn-DB-SG
 
-  lawnVpcSgPrivateEgress: # Let this SG talk to itself
-   Type: 'AWS::EC2::SecurityGroupEgress'
-   Properties:
-      GroupId: !Ref lawnVpcSgPrivate
+  lawnDBGroupIngress: # DB can be written to from Lambdas group
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref lawnDBgroup
       IpProtocol: -1
-      DestinationSecurityGroupId: !GetAtt lawnVpcSgPrivate.GroupId
-  
+      SourceSecurityGroupId: !GetAtt lawnLambdaGroup.GroupId
+
+  lawnDBGroupEgress: # DB can be read from Lambdas group
+    Type: "AWS::EC2::SecurityGroupEgress"
+    Properties:
+      GroupId: !Ref lawnDBgroup
+      IpProtocol: -1
+      DestinationSecurityGroupId: !GetAtt lawnLambdaGroup.GroupId
+
+  lawnLambdaGroup: # Security group for lambdas
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Lawn Lambdas r/w RDS access group
+      VpcId:
+        Fn::ImportValue: lawnVPC
+      GroupName: lawn-Lambda-SG
+      Tags:
+        - Key: Name
+          Value: lawn-Lambda-SG
+
+  lawnLambdaRDSIngress: # Lambdas accepts SQL traffic from RDS
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref lawnLambdaGroup
+      IpProtocol: tcp
+      FromPort: 6543
+      ToPort: 6543
+      SourceSecurityGroupId: !GetAtt lawnDBgroup.GroupId
+
+  lawnLambdaRDSEgress: # Lambdas make RDS queries
+    Type: "AWS::EC2::SecurityGroupEgress"
+    Properties:
+      GroupId: !Ref lawnLambdaGroup
+      IpProtocol: -1
+      DestinationSecurityGroupId: !GetAtt lawnDBgroup.GroupId
+
+  lawnLambdaWebEgress: # Lambdas make web requests
+    Type: "AWS::EC2::SecurityGroupEgress"
+    Properties:
+      GroupId: !Ref lawnLambdaGroup
+      IpProtocol: -1
+      CidrIp: 0.0.0.0/0
+
+  lawnLambdaWebReturnsIngress: # Lambdas accept returning web responses
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref lawnLambdaGroup
+      IpProtocol: tcp
+      FromPort: 1024
+      ToPort: 65535
+      CidrIp: 0.0.0.0/0
+
 Outputs:
-  lawnVpcSgPrivate:
-    Description: A reference to the private SG for RDS/Lambda rw
-    Value: !Ref lawnVpcSgPrivate
+  lawnDBgroup:
+    Description: VPC security group for RDS DB
+    Value: !Ref lawnDBgroup
     Export:
-      Name: lawnVpcSgPrivate
+      Name: lawnDBgroup
+
+  lawnLambdaGroup:
+    Description: VPC security group for Lambda functions
+    Value: !Ref lawnLambdaGroup
+    Export:
+      Name: lawnLambdaGroup
