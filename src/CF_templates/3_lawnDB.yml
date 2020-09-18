@@ -11,7 +11,7 @@ Resources:
       AvailabilityZone: us-east-1b
       DBInstanceClass: db.t2.micro
       DBName: lawndb
-      StorageType: gp2 # aka SSD general purpose
+      StorageType: gp2 # SSD general purpose
       DBInstanceIdentifier: lawnDB
       DBSubnetGroupName:
         Fn::ImportValue: lawnDBsubnetGroup

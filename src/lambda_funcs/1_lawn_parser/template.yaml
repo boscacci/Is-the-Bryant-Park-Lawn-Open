@@ -21,6 +21,8 @@ Resources:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaENIManagementAccess
       MemorySize: 640
       Timeout: 5
+      Role:
+        Fn::ImportValue: LawnLambdaExecRole
       VpcConfig:
         SecurityGroupIds:
           - Fn::ImportValue: lawnLambdaSecurityGroup

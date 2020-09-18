@@ -20,10 +20,12 @@ Resources:
       Handler: app.lambda_handler
       Runtime: python3.8
       MemorySize: 256
-      Timeout: 12
+      Timeout: 8
       Policies:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaRole
         - arn:aws:iam::aws:policy/service-role/AWSLambdaENIManagementAccess
+      Role:
+        Fn::ImportValue: LawnLambdaExecRole
       VpcConfig:
         SecurityGroupIds:
           - Fn::ImportValue: lawnLambdaSecurityGroup
