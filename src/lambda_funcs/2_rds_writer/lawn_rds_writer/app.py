@@ -5,7 +5,11 @@ import psycopg2
 import boto3
 
 client = boto3.client("lambda")
+
 hostname = os.getenv("DB_HOST")
+if not hostname:
+    print("ERROR: No DB hostname found in env")
+    sys.exit()
 
 try:
     conn = psycopg2.connect(
@@ -22,6 +26,8 @@ except:
 
 
 def lambda_handler(event, context):
+
+    print(f"hostname: {hostname}")
 
     parsed_data = scrape_and_parse()
 

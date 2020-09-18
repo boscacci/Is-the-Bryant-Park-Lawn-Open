@@ -23,6 +23,13 @@ Resources:
       Timeout: 12
       Policies:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaENIManagementAccess
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::ImportValue: lawnLambdaSecurityGroup
+        SubnetIds:
+          - Fn::ImportValue: lawnSubnetPrivateA
+          - Fn::ImportValue: lawnSubnetPrivateB
       # Events:
       #   cronTrigger:
       #     Type: CloudWatchEvent

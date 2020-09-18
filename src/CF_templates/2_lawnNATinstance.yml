@@ -1,0 +1,42 @@
+Description: >
+  Configuration of the NAT instance for lawn infra
+
+Resources:
+  lawnNAT:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      SourceDestCheck: "false"
+      ImageId: ami-184dc970
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet:
+            - Fn::ImportValue: LawnNatSecurityGroup
+          SubnetId:
+            Fn::ImportValue: lawnSubnetPublicA
+          DeleteOnTermination: "true"
+      Tags:
+        - Key: Name
+          Value: lawnNAT
+      UserData:
+        Fn::Base64:
+          Fn::Join:
+            - ""
+            - - "#!/bin/bash\n"
+              - yum update -y && yum install -y yum-cron && chkconfig yum-cron on
+
+  LawnPrivateRoute: # Route private subnets to NAT
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Fn::ImportValue: LawnPrivateRouteTab
+      DestinationCidrBlock: 0.0.0.0/0
+      InstanceId: !Ref lawnNAT
+
+Outputs:
+  lawnNATip:
+    Description: Lawn NAT IP address
+    Value: !GetAtt lawnNAT.PublicIp
+    Export:
+      Name: lawnNAT

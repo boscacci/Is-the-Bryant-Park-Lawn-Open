@@ -59,6 +59,14 @@ Resources:
       Runtime: python3.6
       MemorySize: 1280
       Timeout: 7
+      Role:
+        Fn::ImportValue: LawnLambdaExecRole
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::ImportValue: lawnLambdaSecurityGroup
+        SubnetIds:
+          - Fn::ImportValue: lawnSubnetPrivateA
+          - Fn::ImportValue: lawnSubnetPrivateB
       Layers:
         - !Ref ChromiumLayer
         - !Ref PythonDepLayer

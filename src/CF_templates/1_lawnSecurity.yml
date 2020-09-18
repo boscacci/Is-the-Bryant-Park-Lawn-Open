@@ -2,7 +2,71 @@ Description: >
   Security group configs; what can access what in the VPC?
 
 Resources:
-  lawnDBgroup: # Security group for RDS
+  LawnNatSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Lawn NAT Security Group
+      VpcId:
+        Fn::ImportValue: lawnVPC
+      Tags:
+        - Key: Name
+          Value: Lawn NAT Security Group
+
+  LawnNatSGIngress80fromA:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref LawnNatSecurityGroup
+      IpProtocol: tcp
+      FromPort: 80
+      ToPort: 80
+      CidrIp: 10.0.1.0/24
+
+  LawnNatSGIngress80fromB:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref LawnNatSecurityGroup
+      IpProtocol: tcp
+      FromPort: 80
+      ToPort: 80
+      CidrIp: 10.0.2.0/24
+
+  LawnNatSGIngress443fromA:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref LawnNatSecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+      CidrIp: 10.0.1.0/24
+
+  LawnNatSGIngress443fromB:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref LawnNatSecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+      CidrIp: 10.0.2.0/24
+
+  LawnNatSGEngress80:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref LawnNatSecurityGroup
+      IpProtocol: tcp
+      FromPort: 80
+      ToPort: 80
+      CidrIp: 0.0.0.0/0
+
+  LawnNatSGEngress443:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref LawnNatSecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+      CidrIp: 0.0.0.0/0
+
+  lawnDBSecurityGroup: # Security group for RDS to adopt
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Lawn DB SG
@@ -13,21 +77,21 @@ Resources:
         - Key: Name
           Value: lawn-DB-SG
 
-  lawnDBGroupIngress: # DB can be written to from Lambdas group
+  lawnDBSecurityGroupIngress: # DB can be written to from Lambdas group
     Type: "AWS::EC2::SecurityGroupIngress"
     Properties:
-      GroupId: !Ref lawnDBgroup
+      GroupId: !Ref lawnDBSecurityGroup
       IpProtocol: -1
-      SourceSecurityGroupId: !GetAtt lawnLambdaGroup.GroupId
+      SourceSecurityGroupId: !GetAtt lawnLambdaSecurityGroup.GroupId
 
-  lawnDBGroupEgress: # DB can be read from Lambdas group
+  lawnDBSecurityGroupEgress: # DB can be read from Lambdas group
     Type: "AWS::EC2::SecurityGroupEgress"
     Properties:
-      GroupId: !Ref lawnDBgroup
+      GroupId: !Ref lawnDBSecurityGroup
       IpProtocol: -1
-      DestinationSecurityGroupId: !GetAtt lawnLambdaGroup.GroupId
+      DestinationSecurityGroupId: !GetAtt lawnLambdaSecurityGroup.GroupId
 
-  lawnLambdaGroup: # Security group for lambdas
+  lawnLambdaSecurityGroup: # Security group for lambdas
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Lawn Lambdas r/w RDS access group
@@ -41,44 +105,68 @@ Resources:
   lawnLambdaRDSIngress: # Lambdas accepts SQL traffic from RDS
     Type: "AWS::EC2::SecurityGroupIngress"
     Properties:
-      GroupId: !Ref lawnLambdaGroup
-      IpProtocol: tcp
-      FromPort: 6543
-      ToPort: 6543
-      SourceSecurityGroupId: !GetAtt lawnDBgroup.GroupId
+      GroupId: !Ref lawnLambdaSecurityGroup
+      IpProtocol: -1
+      SourceSecurityGroupId: !GetAtt lawnDBSecurityGroup.GroupId
 
   lawnLambdaRDSEgress: # Lambdas make RDS queries
     Type: "AWS::EC2::SecurityGroupEgress"
     Properties:
-      GroupId: !Ref lawnLambdaGroup
+      GroupId: !Ref lawnLambdaSecurityGroup
       IpProtocol: -1
-      DestinationSecurityGroupId: !GetAtt lawnDBgroup.GroupId
+      DestinationSecurityGroupId: !GetAtt lawnDBSecurityGroup.GroupId
 
   lawnLambdaWebEgress: # Lambdas make web requests
     Type: "AWS::EC2::SecurityGroupEgress"
     Properties:
-      GroupId: !Ref lawnLambdaGroup
+      GroupId: !Ref lawnLambdaSecurityGroup
       IpProtocol: -1
       CidrIp: 0.0.0.0/0
 
-  lawnLambdaWebReturnsIngress: # Lambdas accept returning web responses
-    Type: "AWS::EC2::SecurityGroupIngress"
+  LawnLambdaExecRole:
+    Type: AWS::IAM::Role
     Properties:
-      GroupId: !Ref lawnLambdaGroup
-      IpProtocol: tcp
-      FromPort: 1024
-      ToPort: 65535
-      CidrIp: 0.0.0.0/0
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+      Description: Gives lambdas ENI capability and stuff
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaRole
+      MaxSessionDuration: 4000
+      RoleName: LawnLambdaExecRole
+      Tags:
+        - Key: Name
+          Value: LawnLambdaExecRole
 
 Outputs:
-  lawnDBgroup:
+  lawnDBSecurityGroup:
     Description: VPC security group for RDS DB
-    Value: !Ref lawnDBgroup
+    Value: !Ref lawnDBSecurityGroup
     Export:
-      Name: lawnDBgroup
+      Name: lawnDBSecurityGroup
 
-  lawnLambdaGroup:
+  lawnLambdaSecurityGroup:
     Description: VPC security group for Lambda functions
-    Value: !Ref lawnLambdaGroup
+    Value: !Ref lawnLambdaSecurityGroup
     Export:
-      Name: lawnLambdaGroup
+      Name: lawnLambdaSecurityGroup
+
+  LawnNatSecurityGroup:
+    Description: Security group for lawn NAT
+    Value: !Ref LawnNatSecurityGroup
+    Export:
+      Name: LawnNatSecurityGroup
+
+  LawnLambdaExecRole:
+    Description: Gives lambdas ENI and basic exec powers
+    Value: !GetAtt LawnLambdaExecRole.Arn
+    Export:
+      Name: LawnLambdaExecRole

@@ -5,4 +5,4 @@ aws s3api create-bucket \
 sam deploy \
 --stack-name lawnScraper \
 --s3-bucket lawn-scraper-src \
---capabilities CAPABILITY_IAM
+--capabilities CAPABILITY_IAM \

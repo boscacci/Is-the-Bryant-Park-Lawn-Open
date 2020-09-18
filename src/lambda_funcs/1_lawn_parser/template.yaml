@@ -17,8 +17,16 @@ Resources:
       FunctionName: LambdaLawnParserFunction
       Handler: app.lambda_handler
       Runtime: python3.6
+      Policies:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaENIManagementAccess
       MemorySize: 640
       Timeout: 5
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::ImportValue: lawnLambdaSecurityGroup
+        SubnetIds:
+          - Fn::ImportValue: lawnSubnetPrivateA
+          - Fn::ImportValue: lawnSubnetPrivateB
 
 Outputs:
   LambdaLawnParserFunction:

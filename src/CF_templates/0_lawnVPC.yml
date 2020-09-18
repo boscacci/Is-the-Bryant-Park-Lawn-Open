@@ -6,38 +6,104 @@ Resources:
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: True
+      EnableDnsHostnames: True
       Tags:
         - Key: Name
           Value: !Join ["", [!Ref "AWS::StackName", "-VPC"]]
 
-  lawnSubnetPublicA: # 1 of 2 public subnets
+  lawnSubnetPublicA: # 1 of 1 public subnets
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: us-east-1b
+      AvailabilityZone: us-east-1a
       CidrBlock: 10.0.0.0/24
       VpcId: !Ref lawnVPC
       Tags:
         - Key: Name
           Value: lawn-Subnet-Public-A
 
-  lawnSubnetPublicB: # 2 of 2 public subnets
+  lawnSubnetPrivateA: # 1 of 2 private subnets
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: us-east-1c
+      AvailabilityZone: us-east-1b
       CidrBlock: 10.0.1.0/24
       VpcId: !Ref lawnVPC
       Tags:
         - Key: Name
-          Value: lawn-Subnet-Public-B
+          Value: lawn-Subnet-Private-A
+
+  lawnSubnetPrivateB: # 2 of 2 private subnets
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: us-east-1c
+      CidrBlock: 10.0.2.0/24
+      VpcId: !Ref lawnVPC
+      Tags:
+        - Key: Name
+          Value: lawn-Subnet-Private-B
 
   lawnDBsubnetGroup: # RDS DB wants a subnet group. This is it
     Type: AWS::RDS::DBSubnetGroup
     Properties:
-      DBSubnetGroupDescription: The two public subnets
+      DBSubnetGroupDescription: The two private subnets
       DBSubnetGroupName: lawn-DB-subnet-Group
       SubnetIds:
-        - !Ref lawnSubnetPublicA
-        - !Ref lawnSubnetPublicB
+        - !Ref lawnSubnetPrivateA
+        - !Ref lawnSubnetPrivateB
+
+  lawnIGW: # Internet gateway. We're going manual on networking
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: lawnIGW
+
+  lawnIGWconn: # Gotta connect the IGW to the VPC public subnet
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref lawnIGW
+      VpcId: !Ref lawnVPC
+
+  LawnPublicRouteTab: # Route table for public subnet
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref lawnVPC
+      Tags:
+        - Key: Name
+          Value: lawn-public-route-tab
+
+  LawnPublicRoute: # Connects 0.0.0.0/0 to IGW
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref LawnPublicRouteTab
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref lawnIGW
+
+  LawnPublicSubnetRouteTabAssocA: # Plug route table into public subnet
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref lawnSubnetPublicA
+      RouteTableId: !Ref LawnPublicRouteTab
+
+  LawnPrivateRouteTab: # R0ute table for private subnet
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref lawnVPC
+      Tags:
+        - Key: Name
+          Value: lawn-private-route-tab
+
+  LawnPrivateSubnetRouteTableAssocA: # Plug private RT into priv subnet
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref lawnSubnetPrivateA
+      RouteTableId: !Ref LawnPrivateRouteTab
+
+  LawnPrivateSubnetRouteTableAssocB: # Plug private RT into priv subnetB
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref lawnSubnetPrivateB
+      RouteTableId: !Ref LawnPrivateRouteTab
 
 Outputs:
   lawnVPC:
@@ -47,7 +113,31 @@ Outputs:
       Name: lawnVPC
 
   lawnDBsubnetGroup:
-    Description: A reference to the public DB subnet group
+    Description: A reference to the private DB subnet group
     Value: !Ref lawnDBsubnetGroup
     Export:
       Name: lawnDBsubnetGroup
+
+  lawnSubnetPublicA:
+    Description: One of one public subnets
+    Value: !Ref lawnSubnetPublicA
+    Export:
+      Name: lawnSubnetPublicA
+
+  lawnSubnetPrivateA:
+    Description: One of two private subnets
+    Value: !Ref lawnSubnetPrivateA
+    Export:
+      Name: lawnSubnetPrivateA
+
+  lawnSubnetPrivateB:
+    Description: Two of two private subnets
+    Value: !Ref lawnSubnetPrivateB
+    Export:
+      Name: lawnSubnetPrivateB
+
+  LawnPrivateRouteTab:
+    Description: Private route table for NAT to use
+    Value: !Ref LawnPrivateRouteTab
+    Export:
+      Name: LawnPrivateRouteTab

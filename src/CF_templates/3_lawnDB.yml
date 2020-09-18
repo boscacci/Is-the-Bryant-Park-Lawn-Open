@@ -15,13 +15,13 @@ Resources:
       DBInstanceIdentifier: lawnDB
       DBSubnetGroupName:
         Fn::ImportValue: lawnDBsubnetGroup
-      MasterUsername: lawn_admin # Ultimately safeguarded by SG
-      MasterUserPassword: lawn_password # Ultimately safeguarded by SG
-      PubliclyAccessible: True
+      MasterUsername: lawn_admin # Not a secret
+      MasterUserPassword: lawn_password # # Not a secret
+      PubliclyAccessible: False
       Port: 6543 # Slightly non-default postgreSQL port
       Engine: postgres
       VPCSecurityGroups:
-        - Fn::ImportValue: lawnDBgroup # Doesn't touch the web
+        - Fn::ImportValue: lawnDBSecurityGroup
 
 Outputs:
   lawnDB:

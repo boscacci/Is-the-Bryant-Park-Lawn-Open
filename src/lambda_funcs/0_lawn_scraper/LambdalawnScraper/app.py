@@ -27,7 +27,7 @@ def lambda_handler(event, context):
                 EC.presence_of_element_located(
                     (
                         By.XPATH,
-                        '//*[@id="react-home"]/section/section/div[1]/div/div[2]/div[2]/section/div/h4',
+                        "/html/body/div[4]/div[1]/section/section/div[1]/div/div[2]/div[2]/section/div/h4",
                     )
                 )
             )
@@ -38,7 +38,10 @@ def lambda_handler(event, context):
             WebDriverWait(driver, 3)
             .until(
                 EC.presence_of_element_located(
-                    (By.XPATH, '//*[@id="weather-underground"]/p',)
+                    (
+                        By.XPATH,
+                        "/html/body/div[4]/div[1]/section/section/div[1]/div/div[2]/div[1]/section/div/div/div[2]/section/p",
+                    )
                 )
             )
             .text
