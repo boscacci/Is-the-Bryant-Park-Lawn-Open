@@ -5,7 +5,7 @@ import boto3
 import pandas as pd
 import psycopg2
 from sqlalchemy import create_engine
-from sqlalchemy.types import Integer, Text, DateTime
+from sqlalchemy.types import Integer, Text, DateTime, Boolean
 
 client = boto3.client("lambda")
 
@@ -31,7 +31,7 @@ def lambda_handler(event, context):
 
     parsed_data = scrape_and_parse()
 
-    print(parsed_data)
+    print(f"Parsed data: {parsed_data}")
 
     write_one_row_to_rds(parsed_data)
 
@@ -39,9 +39,21 @@ def lambda_handler(event, context):
 
 
 def write_one_row_to_rds(parsed_data):
-    row_df = pd.Series(parsed_data).to_frame()
+    row_df = pd.DataFrame.from_dict({k: [v] for k, v in parsed_data.items()})
     row_df.to_sql(
-        name="lawn", con=engine, if_exists="append", index=False, dtype={}
+        name="lawn",
+        con=engine,
+        if_exists="append",
+        index=False,
+        index_label="utc_time",
+        dtype={
+            "utc_time": DateTime,
+            "lawn_open": Boolean,
+            "utc_hour": Integer,
+            "utc_weekday": Integer,
+            "temp_F": Integer,
+            "original_status": Text,
+        },
     )
 
     print("One row written.")

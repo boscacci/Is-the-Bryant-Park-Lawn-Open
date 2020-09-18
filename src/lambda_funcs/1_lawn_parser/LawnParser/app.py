@@ -12,8 +12,8 @@ def lambda_handler(event, context):
     utc_weekday = utc_time.weekday()
 
     payload = dict(
-        utc_time=utc_time.strftime("%Y-%m-%d %H:%M:%S+00"),
-        lawn_open=str(binary_lawn_open).upper(),
+        utc_time=utc_time.strftime("%Y-%m-%d %H:%M:%S"),
+        lawn_open=binary_lawn_open,
         utc_hour=utc_hour_of_day,
         utc_weekday=utc_weekday,
         temp_F=temp_F,
