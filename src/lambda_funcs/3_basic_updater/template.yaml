@@ -1,18 +1,18 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  2_rds_writer
-  SAM Template for 2_rds_writer
+  3_basic_updater
+  SAM Template for 3_basic_updater
 
 Globals:
   Function:
     Timeout: 12
 
 Resources:
-  lawnRDSwriter:
+  lawnBasicUpdater:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: lawn_rds_writer/
+      CodeUri: lawn_basic_updater/
       Environment:
         Variables:
           DB_HOST:
@@ -20,9 +20,9 @@ Resources:
       Handler: app.lambda_handler
       Runtime: python3.8
       MemorySize: 256
-      Timeout: 12
+      Timeout: 7
       Policies:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaRole
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
         - arn:aws:iam::aws:policy/service-role/AWSLambdaENIManagementAccess
       Role:
         Fn::ImportValue: LawnLambdaExecRole
@@ -32,15 +32,15 @@ Resources:
         SubnetIds:
           - Fn::ImportValue: lawnSubnetPrivateA
           - Fn::ImportValue: lawnSubnetPrivateB
-      Events:
-        RDSWriteScheduledEvent:
-          Type: Schedule
-          Properties:
-            Schedule: cron(0,30 * ? * * *)
-            Description: Scrape web and write to RDS every 30mins
-            Enabled: True
+      # Events:
+      #   S3UpdaterScheduledEvent:
+      #     Type: Schedule
+      #     Properties:
+      #       Schedule: cron(1,31 * ? * * *)
+      #       Description: Read from RDS and update site every 30mins
+      #       Enabled: True
 
 Outputs:
   lawnRDSwriter:
-    Description: "Function that writes lawn status to rds rows"
-    Value: !GetAtt lawnRDSwriter.Arn
+    Description: "Function that updates the static s3 site"
+    Value: !GetAtt lawnBasicUpdater.Arn

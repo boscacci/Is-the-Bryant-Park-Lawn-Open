@@ -3,6 +3,7 @@ import sys, os, json
 import boto3
 
 import pandas as pd
+
 import psycopg2
 from sqlalchemy import create_engine
 from sqlalchemy.types import Integer, Text, DateTime, Boolean
@@ -14,31 +15,43 @@ if not hostname:
     print("ERROR: No DB hostname found in env")
     sys.exit()
 
-try:
-    db_uri = (
-        f"postgres+psycopg2://lawn_admin:lawn_password@{hostname}:6543/lawndb"
-    )
-    engine = create_engine(db_uri, echo=True)
-
-except:
-    print("ERROR: Couldn't connect to lawn RDS DB.")
-    sys.exit()
-
 
 def lambda_handler(event, context):
 
     print(f"RDS hostname: {hostname}")
 
+    this_is_a_test = event.get("just_a_test", False) == "true"
+
+    # print(f"This is a test: {this_is_a_test}")
+
+    if not this_is_a_test:
+        engine = make_db_connection()
+    else:
+        print("Just a test, not writing rows to DB")
+
     parsed_data = scrape_and_parse()
 
     print(f"Parsed data: {parsed_data}")
 
-    write_one_row_to_rds(parsed_data)
+    if not this_is_a_test:
+        write_one_row_to_rds(engine, parsed_data)
 
     return {"statusCode": 200}
 
 
-def write_one_row_to_rds(parsed_data):
+def make_db_connection():
+    try:
+        db_uri = f"postgres+psycopg2://lawn_admin:lawn_password@{hostname}:6543/lawndb"
+        engine = create_engine(db_uri, echo=True)
+
+    except:
+        print("ERROR: Couldn't connect to lawn RDS DB.")
+        sys.exit()
+
+    return engine
+
+
+def write_one_row_to_rds(engine, parsed_data):
     row_df = pd.DataFrame.from_dict({k: [v] for k, v in parsed_data.items()})
     row_df.to_sql(
         name="lawn",
@@ -60,7 +73,7 @@ def write_one_row_to_rds(parsed_data):
 
 
 def scrape_and_parse():
-    print("starting to scrape...")
+    print("Starting to scrape...")
 
     scraper_response = client.invoke(
         FunctionName="LambdaLawnScraperFunction",
