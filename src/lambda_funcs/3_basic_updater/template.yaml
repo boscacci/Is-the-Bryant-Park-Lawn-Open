@@ -32,13 +32,13 @@ Resources:
         SubnetIds:
           - Fn::ImportValue: lawnSubnetPrivateA
           - Fn::ImportValue: lawnSubnetPrivateB
-      # Events:
-      #   S3UpdaterScheduledEvent:
-      #     Type: Schedule
-      #     Properties:
-      #       Schedule: cron(1,31 * ? * * *)
-      #       Description: Read from RDS and update site every 30mins
-      #       Enabled: True
+      Events:
+        S3UpdaterScheduledEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(2,32 * ? * * *)
+            Description: Read from RDS and update site every 30mins
+            Enabled: True
 
 Outputs:
   lawnRDSwriter:

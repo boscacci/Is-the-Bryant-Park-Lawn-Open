@@ -36,7 +36,7 @@ Resources:
         RDSWriteScheduledEvent:
           Type: Schedule
           Properties:
-            Schedule: cron(0,30 * ? * * *)
+            Schedule: cron(1,31 * ? * * *)
             Description: Scrape web and write to RDS every 30mins
             Enabled: True
 

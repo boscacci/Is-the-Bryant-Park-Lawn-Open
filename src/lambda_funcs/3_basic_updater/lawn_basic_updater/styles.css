@@ -1,0 +1,19 @@
+#status_image {
+    height: 60vh;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+}
+
+@media screen and (min-width: 479px) {
+    #status_image {
+        height: 45vh;
+        background-size: contain;
+    }
+}
+
+#stats_button {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}

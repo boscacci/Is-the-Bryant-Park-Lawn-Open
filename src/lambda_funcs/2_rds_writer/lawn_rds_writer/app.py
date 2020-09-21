@@ -52,6 +52,7 @@ def make_db_connection():
 
 
 def write_one_row_to_rds(engine, parsed_data):
+    print("Writing a row to RDS...")
     row_df = pd.DataFrame.from_dict({k: [v] for k, v in parsed_data.items()})
     row_df.to_sql(
         name="lawn",
