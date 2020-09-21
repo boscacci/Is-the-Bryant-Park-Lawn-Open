@@ -1,9 +1,11 @@
 import os, sys
 
-# import boto3
+import boto3
 import pandas as pd
 import psycopg2
 from sqlalchemy import create_engine
+
+from html_formatter import format_index_html
 
 hostname = os.getenv("DB_HOST")
 if not hostname:
@@ -31,17 +33,37 @@ def lambda_handler(event, context):
     else:
         print("Status has not changed. No s3 update.")
 
+    if True:  # For testing s3 puts even though status hasn't changed
+        print("Testing write to s3")
+        update_s3_status(last_2_rows)
+
     return {"statusCode": 200}
 
 
 def update_s3_status(last_2_rows):
-    print("Attempting some s3 puts.")
+    index_html = format_index_html(last_2_rows)
+    write_to_bucket(index_html)
+
+
+def write_to_bucket(html_str):
+    client = boto3.client("s3")
+
+    print("Writing to s3 bucket...")
+
+    response = client.put_object(
+        Bucket="isthebryantparklawnopen.com",
+        Body=html_str,
+        Key="index.html",
+        ContentType="text/html",
+    )
+
+    print("Wrote to s3.")
 
 
 def update_required(last_2_rows):
     statuses = last_2_rows.lawn_open
-    current_status = "open" if statuses[0] == True else "closed"
-    if statuses[1] != statuses[0]:
+    current_status = "open" if statuses.iloc[0] == True else "closed"
+    if statuses[1] != statuses.iloc[0]:
         print(f"Lawn has changed to {current_status}.")
         return True
     else:
