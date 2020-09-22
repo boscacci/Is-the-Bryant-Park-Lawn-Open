@@ -1,4 +1,4 @@
-# <a href="www.isthebryantparklawnopen.com">isTheBryantParkLawnOpen.com</a>
+# <a href="http://isthebryantparklawnopen.com">isTheBryantParkLawnOpen.com</a>
 
 Proffers a binary answer to the question in the domain name:
 
