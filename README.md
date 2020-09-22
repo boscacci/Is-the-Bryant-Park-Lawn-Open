@@ -1,15 +1,16 @@
-# isTheBryantParkLawnOpen.com
+# <a href="www.isthebryantparklawnopen.com">isTheBryantParkLawnOpen.com</a>
 
-www.isthebryantparklawnopen.com
+Proffers a binary answer to the question in the domain name:
 
-A single serving website. Provides a binary answer:
+<a href="http://isthebryantparklawnopen.com"><img src="img/site.png"></a>
 
-<a href="http://isthebryantparklawnopen.com"><img src="img/lawn.png"></a>
+## <a href="https://towardsdatascience.com/ditching-the-aws-gui-console-ac77f46a05fa">Full project write-up on Medium</a>
 
-It's a hello-worldy project used to familiarize myself with AWS:
-- S3
-- Lambda / SAM
-- RDS
+Uses AWS Lambda to scrape the web with a headless browser, collecting one bit of information. Saves that binary variable to a database and references that database to keep an s3 bucket site updated. Renders some aggregate statistics as plotly visualizations on a second page.
+
+It's a hello-worldy project I undertook mostly just to dive a little deeper with AWS:
 - CloudFormation
-
-#TODO: Bryant Park does not have a lawn during the winter, just an ice rink. The website should reflect this.
+- Lambda / SAM
+- S3
+- RDS
+- VPC / Cloud Networking
