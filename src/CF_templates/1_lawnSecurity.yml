@@ -77,14 +77,14 @@ Resources:
         - Key: Name
           Value: lawn-DB-SG
 
-  lawnDBSecurityGroupIngress: # DB can be written to from Lambdas group
+  lawnDBSecurityGroupIngressLambda: # DB can be written to from Lambdas group
     Type: "AWS::EC2::SecurityGroupIngress"
     Properties:
       GroupId: !Ref lawnDBSecurityGroup
       IpProtocol: -1
       SourceSecurityGroupId: !GetAtt lawnLambdaSecurityGroup.GroupId
 
-  lawnDBSecurityGroupEgress: # DB can be read from Lambdas group
+  lawnDBSecurityGroupEgressLambda: # DB can be read from Lambdas group
     Type: "AWS::EC2::SecurityGroupEgress"
     Properties:
       GroupId: !Ref lawnDBSecurityGroup
@@ -140,6 +140,7 @@ Resources:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
         - arn:aws:iam::aws:policy/service-role/AWSLambdaRole
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
       MaxSessionDuration: 4000
       RoleName: LawnLambdaExecRole
       Tags:
