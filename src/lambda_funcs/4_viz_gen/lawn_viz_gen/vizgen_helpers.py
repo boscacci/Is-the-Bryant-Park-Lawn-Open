@@ -8,8 +8,8 @@ hour_bin_names = "Midnight-4a 4a-8a 8a-Noon Noon-4p 4p-8p 8p-Midnight".split()
 
 def make_uptime_heatmap(df):
     grouped_uptime = group_day_hour_uptime(df)
-    div_uptime_heatmap = make_uptime_plotly_div(grouped_uptime)
-    return div_uptime_heatmap
+    uptime_heatmap_fig = make_uptime_plotly_fig(grouped_uptime)
+    return uptime_heatmap_fig
 
 
 def make_uptime_plotly_fig(grouped_uptime):
@@ -19,7 +19,9 @@ def make_uptime_plotly_fig(grouped_uptime):
 
     fig = px.imshow(
         grouped_uptime * 100,
-        labels=dict(x="Days of Week", y="Times of Day", color="Uptime %"),
+        labels=dict(
+            x="Days of Week", y="Times of Day", color="Lawn Oppenness %"
+        ),
         x=day_names,
         y=hour_bin_names,
     )

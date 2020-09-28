@@ -7,7 +7,7 @@ import pandas as pd
 import psycopg2
 from sqlalchemy import create_engine
 
-from vizgen_helpers import make_uptime_plotly_fig
+from vizgen_helpers import make_uptime_heatmap
 from viz_html_gen import generate_vizgen_html
 
 hostname = os.getenv("DB_HOST")
@@ -30,7 +30,7 @@ def lambda_handler(event, context):
     # write_to_bucket(df) # (For making a local debug CSV)
 
     # Create a plotly fig object, write as json to s3
-    uptime_fig = make_uptime_plotly_fig(df)
+    uptime_fig = make_uptime_heatmap(df)
     write_fig_to_bucket(uptime_fig)
 
     # The HTML will get the json data injected by some ES6
@@ -68,7 +68,9 @@ def write_stats_html_to_bucket(stats_html):
     bucket = "isthebryantparklawnopen.com"
     print("Writing second HTML page to ITBPLO bucket...")
     s3_resource = boto3.resource("s3")
-    s3_resource.Object(bucket, "stats.html").put(Body=stats_html)
+    s3_resource.Object(bucket, "stats").put(
+        Body=stats_html, ContentType="text/html"
+    )
     print("Wrote stats page to s3.")
 
 

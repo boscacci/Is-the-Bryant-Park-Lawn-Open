@@ -61,8 +61,8 @@ def format_index_html(last_2_rows):
             </p>
 
             <br/>
-            <div id="stats_button">
-                <a class="btn btn-primary btn-lg" href="stats.html" role="button">View Stats</a>
+            <div id="stats_button" class="centered">
+                <a class="btn btn-primary btn-lg" href="stats" role="button">View Stats</a>
             </div>
 
             <br/>

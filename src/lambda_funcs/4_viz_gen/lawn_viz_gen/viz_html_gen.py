@@ -27,7 +27,9 @@ def generate_vizgen_html(time_EST):
 
                 <!-- I <3 Catherine!! -->
                 
-                <h2>Lawn Open-ness:</h2>
+                <div class="centered">
+                    <h2 id="openness">Average Lawn Openness (Mean)</h2>    
+                </div>
 
                 <div id="uptime_heatmap"></div>
 
@@ -35,7 +37,7 @@ def generate_vizgen_html(time_EST):
                     Last updated {time_EST} Eastern.
                 </p>
 
-                <div id="back_button">
+                <div id="back_button" class="centered">
                     <a class="btn btn-primary btn-lg" href="index.html" role="button">Back</a>
                 </div>
 

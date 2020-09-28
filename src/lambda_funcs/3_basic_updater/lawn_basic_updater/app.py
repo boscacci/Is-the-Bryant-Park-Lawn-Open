@@ -33,9 +33,11 @@ def lambda_handler(event, context):
     else:
         print("Status has not changed. No s3 update.")
 
-    # if True:  # For debugging s3 puts even though status hasn't changed
-    #     print("Testing write to s3")
-    #     update_s3_status(last_2_rows)
+    if event.get(
+        "just_a_test"
+    ):  # For debugging s3 puts even though status hasn't changed
+        print("Testing write to s3")
+        update_s3_status(last_2_rows)
 
     return {"statusCode": 200}
 
