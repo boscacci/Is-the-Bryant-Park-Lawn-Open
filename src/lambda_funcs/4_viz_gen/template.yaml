@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  4_viz_gen
+  Generates aggregate stats visualizations
+
+Globals:
+  Function:
+    Timeout: 12
+
+Resources:
+  lawnVizGen:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: lawn_viz_gen/
+      Environment:
+        Variables:
+          DB_HOST:
+            Fn::ImportValue: lawnDB
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      MemorySize: 512
+      Timeout: 15
+      Policies:
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaENIManagementAccess
+      Role:
+        Fn::ImportValue: LawnLambdaExecRole
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::ImportValue: lawnLambdaSecurityGroup
+        SubnetIds:
+          - Fn::ImportValue: lawnSubnetPrivateA
+          - Fn::ImportValue: lawnSubnetPrivateB
+      # Events:
+      #   S3UpdaterScheduledEvent:
+      #     Type: Schedule
+      #     Properties:
+      #       Schedule: cron(2,32 * ? * * *)
+      #       Description: Read from RDS and update site every 30mins
+      #       Enabled: True
+
+Outputs:
+  lawnVizGen:
+    Description: "Function that creates a plotly visualization"
+    Value: !GetAtt lawnVizGen.Arn

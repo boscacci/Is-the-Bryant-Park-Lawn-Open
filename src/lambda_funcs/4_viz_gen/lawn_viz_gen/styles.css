@@ -1,0 +1,17 @@
+@media screen and (min-width: 479px) {
+    #status_image {
+        height: 45vh;
+        background-size: contain;
+    }
+}
+
+h1 {
+    display: flex;
+    justify-content: center;
+}
+
+#back_button {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
