@@ -15,7 +15,7 @@ def make_uptime_heatmap(df):
 def make_uptime_plotly_fig(grouped_uptime):
     print("Creating uptime heatmap json...")
 
-    px.defaults.color_continuous_scale = px.colors.sequential.Teal
+    px.defaults.color_continuous_scale = px.colors.sequential.Greens
 
     fig = px.imshow(
         grouped_uptime * 100,

@@ -1,4 +1,4 @@
-def generate_vizgen_html(time_EST):
+def generate_vizgen_html(time_EST, n_weeks):
     print("Generating stats page HTML...")
     vizgen_html = f"""
         <!doctype html>
@@ -32,6 +32,10 @@ def generate_vizgen_html(time_EST):
                 </div>
 
                 <div id="uptime_heatmap"></div>
+
+                <p align='center'>
+                    This represents ~{n_weeks} weeks of twice-hourly sampling.
+                </p>
 
                 <p align='center'>
                     Last updated {time_EST} Eastern.

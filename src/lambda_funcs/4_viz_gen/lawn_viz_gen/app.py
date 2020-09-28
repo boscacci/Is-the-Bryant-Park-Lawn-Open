@@ -33,8 +33,10 @@ def lambda_handler(event, context):
     uptime_fig = make_uptime_heatmap(df)
     write_fig_to_bucket(uptime_fig)
 
+    n_weeks = round((df.shape[0] / 48 / 7), 1)
+
     # The HTML will get the json data injected by some ES6
-    stats_page_html = generate_vizgen_html(time_EST)
+    stats_page_html = generate_vizgen_html(time_EST, n_weeks)
 
     # Has to be written to the bucket of course
     write_stats_html_to_bucket(stats_page_html)

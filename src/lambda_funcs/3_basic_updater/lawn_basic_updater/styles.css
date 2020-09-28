@@ -5,6 +5,10 @@
     background-position: bottom center;
 }
 
+.modebar {
+    display: none !important;
+}
+
 @media screen and (min-width: 479px) {
     #status_image {
         height: 45vh;
@@ -24,4 +28,8 @@
 
 #openness {
     margin-bottom: 5vh;
+}
+
+#back_button {
+    margin-top: 2vh;
 }
