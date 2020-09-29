@@ -25,6 +25,7 @@ def format_index_html(last_2_rows):
     <html lang="en">
 
         <head>
+            <title>Is the Bryant Park Lawn Open?</title>
             <!-- Global site tag (gtag.js) - Google Analytics -->
             <script async src="https://www.googletagmanager.com/gtag/js?id=UA-177618781-1"></script>
             <script>
