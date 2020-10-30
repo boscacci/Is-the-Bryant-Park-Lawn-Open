@@ -6,9 +6,9 @@ def format_index_html(last_2_rows):
 
     latest_row = last_2_rows.iloc[0]
 
-    open_photo_url = "https://s3.amazonaws.com/isthebryantparklawnopen.com/img/bplawn_open.jpg"
+    open_photo_url = "https://s3.amazonaws.com/isthebryantparklawnopen.com/img/rink_open.jpg"
 
-    closed_photo_url = "https://s3.amazonaws.com/isthebryantparklawnopen.com/img/bplawn_closed.jpg"
+    closed_photo_url = "https://s3.amazonaws.com/isthebryantparklawnopen.com/img/rink_closed.jpg"
 
     lawn_is_open = latest_row["lawn_open"] == True
 

@@ -8,3 +8,4 @@ selenium-binaries
 .python-version
 build
 src/lambda_funcs/2_rds_writer/env.json
+build.toml

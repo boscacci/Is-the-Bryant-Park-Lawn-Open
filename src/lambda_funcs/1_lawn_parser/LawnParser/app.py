@@ -28,7 +28,7 @@ def lambda_handler(event, context):
 
 def raw_to_bool(raw_lawn_status):
     lower_lawn_status = raw_lawn_status.lower()
-    if "lawn is open" in lower_lawn_status:
+    if "is open" in lower_lawn_status:
         return True
     else:
         return False
