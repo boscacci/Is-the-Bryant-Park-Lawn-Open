@@ -1,6 +1,4 @@
-# <a href="http://isthebryantparklawnopen.com">isTheBryantParkLawnOpen.com</a>
-
-Proffers a binary answer to the question in the domain name:
+# Is the Bryant Park Lawn Open?
 
 <a href="http://isthebryantparklawnopen.com"><img src="img/site.png"></a>
 
